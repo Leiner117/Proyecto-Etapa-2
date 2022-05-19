@@ -72,66 +72,9 @@ def gen_weeks(start_date,difference,end_date,dayclass,course,shedule):
             shedule.append(year)
             start_month = 1
         i = i+1
-        '''else:
-            add_daysforweeks(start_month,start_year,dayclass,course,shedule)
-            if start_month > 12:
-                start_year = start_year+1
-                
-                start_month = 1
-            i = i+1
-            start_month = start_month+1'''
-            
-def add_daysforweeks(start_month,start_year,dayclass,course,shedule):
-    weeks = filter_days(start_year,start_month,dayclass,shedule)
-    flag = False
-    
-    for i in shedule:
-        if i.getDate_year() == start_year:
-            for a in i.getList_months():
-                if a.getNum_months() == start_month:
-                    for b in a.getList_weeks():
-                        for x in b.getList_days():
-                            for z in weeks:
-                                for m in z:
-                                    if m == x.getDate():
 
-                                        x.list_activities.append(create_activities(course,x.getDate()))
-                                        for a in x.list_activities:
-                                            totaltime = (a.getEnd_time()-a.getStart_time())
-                                            totaltime = totaltime.seconds//60
-                                            x.hours = x.hours+totaltime
-                    
-def filter_days(start_year,start_month,dayclass,shedule):
-    weeks = calendar.monthcalendar(start_year,start_month)
-    flag = False
-    auxlist2 = []
-    for i in weeks:
-        auxlist = []
-        for a in i:
-            if a != 0:
-                if i.index(a) in dayclass:
-                    date = str(start_year)+"/"+str(start_month)+"/"+str(a)
-                    date = datetime.strptime(date, '%Y/%m/%d')
-                    if search_day(shedule,date) == False:
-                        for b in shedule:
-                            for k in b.getList_months():
-                                if k.num_months == date.month:
-                                    for n in k.getList_weeks():
-                                        if k.list_weeks.index(n) == weeks.index(i):
-                                            obday = days(datetime.weekday(date),date)
-                                            n.list_days.append(obday)
-                                            
-                    auxlist.append(date) 
-        auxlist2.append(auxlist)                    
-        
-    return auxlist2
-        
-            
 
-def add_month(year,month,shedule):
-    for i in shedule:
-        if year == i.getDate_year():
-            i.list_months.append(month)
+
 def create_months(month,year):
     
     name = calendar.month_name[month]
@@ -164,6 +107,7 @@ def create_weeks(list_weeks,month,year,obmonth,start_date,end_date,dayclass,cour
                                 totaltime = totaltime.seconds//60
                                 obday.hours = obday.hours+totaltime
                             obweek.list_days.append(obday)
+                            add_hours_weeks(obweek)
                             
                         else:
                             pass
@@ -180,6 +124,7 @@ def create_weeks(list_weeks,month,year,obmonth,start_date,end_date,dayclass,cour
                                 totaltime = totaltime.seconds//60
                                 obday.hours = obday.hours+totaltime
                             obweek.list_days.append(obday)
+                            add_hours_weeks(obweek)
                         else:
                             pass
                     if month != start_date.month and end_date.month != month:
@@ -192,6 +137,7 @@ def create_weeks(list_weeks,month,year,obmonth,start_date,end_date,dayclass,cour
                             totaltime = totaltime.seconds//60
                             obday.hours = obday.hours+totaltime
                         obweek.list_days.append(obday)
+                        add_hours_weeks(obweek)
         obmonth.list_weeks.append(obweek)
         
 def create_activities(course,date):
@@ -250,7 +196,14 @@ def returnmonth(shedule,year,month):
             for a in i.list_months:
                 if month == a.getNum_months():
                     return a
-    
+def returnweek(shedule,year,day):
+    for i in shedule:
+        if i.date_year == year:
+            for a in i.list_months:
+                for b in a.list_weeks:
+                    for c in b.list_days:
+                        if c.date == day:
+                            return b
 def add_activities(shedule,activies):
     date = activies.date
     if search_year(date.year,shedule) == True:
@@ -258,8 +211,9 @@ def add_activities(shedule,activies):
         if search_month(shedule,date.month,date.year) == True:
             
             if search_day(shedule,date) == True:
-                day = returndays(shedule,day)
-                day.list_activies.append(activies)
+                day = returndays(shedule,date)
+                add_hours_weeks(returnweek(shedule,date.year,date))
+                day.list_activities.append(activies)
             else:
                 obday = days(datetime.weekday(date),date)
                 obday.list_activities.append(activies)
@@ -277,6 +231,7 @@ def add_activities(shedule,activies):
                             break
                 for b in month.list_weeks:
                     if month.list_weeks.index(b) == position_week:
+                        add_hours_weeks(b)
                         b.list_days.append(obday)
                         break
         else:
@@ -293,6 +248,7 @@ def add_activities(shedule,activies):
                             totaltime = totaltime.seconds//60
                             obday.hours = obday.hours+totaltime
                         ob_week.list_days.append(obday)
+                        add_hours_weeks(ob_week)
                         obmonth.list_weeks.append(ob_week)  
                 
                 obmonth.list_weeks.append(ob_week)  
@@ -315,12 +271,16 @@ def add_activities(shedule,activies):
                             totaltime = totaltime.seconds//60
                             obday.hours = obday.hours+totaltime
                         ob_week.list_days.append(obday)
+                        add_hours_weeks(ob_week)
                         month1.list_weeks.append(ob_week)  
                 
                 month1.list_weeks.append(ob_week)  
             year.list_months.append(month1)
             i = i+1
             nummes = nummes+1
-            
-                
-                    
+def add_hours_weeks(week):
+    totalhours = 0
+    for i in week.list_days:
+        totalhours = totalhours+i.hours 
+    week.hours_week = totalhours
+

@@ -1,10 +1,10 @@
 class students:
-    def __init__(self,name,email,career,password,courses):
+    def __init__(self,name,email,career,password):
         self.name = name
         self.email = email
         self.career = career
         self.password = password
-        self.courses = courses
+        self.courses = []
         self.shedule = []
     def getName(self):
         return self.name

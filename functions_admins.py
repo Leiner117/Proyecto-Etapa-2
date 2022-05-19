@@ -165,7 +165,7 @@ def select_course():
         select_course()
     else:
         return (select-1)
-def select_position_careers():
+def select_position_careers(name):
     
     
     '''
@@ -173,17 +173,12 @@ def select_position_careers():
     retorna el indice de la carreras seleccionada
     '''
     global careers
-    print("Seleccione la carrera que desea que desea:")
-    a = 1
     for i in list_careers:
-        print(str(a)+"-"+i.getName())
-        a = a+1
-    select = int(input("---->"))
-    if select > len(list_careers):
-        print("El curso seleccionado no existe.")
-        select_position_careers()
-    else:
-        return (select-1)
+        if i.getName() == name:
+            select = i
+            return select
+
+    
 
 def mod_courses():
     '''

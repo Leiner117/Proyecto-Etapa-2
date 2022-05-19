@@ -9,20 +9,24 @@ from obCourses import course
 from obclass_time import hours_class
 from obCareers import careers
 list_students = []#Almacena todos los estudiantes
-def register (): 
+def register (name,email,career,password): 
     '''
     Registra estudiantes en una lista, ingresando los datos solicitados 
     Se utiliza una lista indexadas para almacenar los estudiantes 
     '''
-    courses = []
-    name = input("Ingrese su nombre: ")
-    email =  input("porfavor introduce tu gmail: ")   
-    career = functions_admins.select_position_careers()
-    career = functions_admins.list_careers[career]
-    password = input("porfavor introduce una contraseña: ")
-    student = students(name,email,career,password,courses)
-    list_students.append(student)
-    print("Te has registrado con exito!!! ")
+    flag = False
+    if len(list_students) != 0:
+        for i in list_students:
+            if i.getName() == name:
+                flag = True
+                break
+    if flag == False:
+        
+        student = students(name,email,career,password)
+        list_students.append(student)
+    return flag 
+            
+    
 def mod_careers(student):
     '''
     Recibe como parametro el nombre del estudiante que quiere cambiar la carrera
@@ -87,13 +91,17 @@ def add_activities(student):
     end_time = input("Ingrese la hora de conclusion de la actividad: ")
     end_time = datetime.strptime(end_time, '%H:%M')
     result = compare_date(student,start_date,start_time,end_time)
-    if result == True:
+    if result == 0:
         status = "En curso"
         new_activities = activities(description,course,start_date,start_time,end_time,status)
         control_dates.add_activities(student.shedule,new_activities)
         print("La actividad se agrego con exito")
-    else:
+    elif result == 1:
         print("Tienes un choque en tu horario, no puedes agregar esta actividad.")
+    elif result == 2:
+        print("Las horas semanales superan el limite.")
+    elif result == 3:
+        print("Las horas diarias superan el limite.")
 def course_activities(student):
     '''
     Imprime la lista de cursos matriculados y en curso para asociar alguna actividad
@@ -118,40 +126,39 @@ def compare_date(student,date,start_time,end_time):
     se comparan las horas de la actividad para evitar choques de horarios
     se retorna un True o False dependiendo de si hay o no choque
     '''
-    result = True
+    result = 0
     shedule = student.shedule
-    if control_dates.search_day(shedule,date) == True:
-        day = control_dates.returndays(shedule,date)
-        for i in day.list_activities:
-            if i.getStatus() == "En curso":
-                if ((i.getStart_time() > end_time or start_time > i.getEnd_time())):
-                    result = True# ya existe la fecha y no tiene problemas con los demas horarios
+    totaltime = (end_time.hour*60)-(start_time.hour*60)
+    if totaltime <= 720:
+        if control_dates.search_day(shedule,date) == True:
+            day = control_dates.returndays(shedule,date)
+            week = control_dates.returnweek(shedule,date.year,date)
+            if week.hours_week <= 4320:
+                if day.hours <= 720:
+                    for i in day.list_activities:
+                        if i.getStatus() == "En curso":
+                            if ((i.getStart_time() > end_time or start_time > i.getEnd_time())):
+                                result = 0# ya existe la fecha y no tiene problemas con los demas horarios
+                            else:
+                                result = 1# tiene choque de horario
+                                break
+                        else:
+                            result = 0 #la fecha esta registrada pero los actividades ya se ejecutaron
                 else:
-                    result = False# tiene choque de horario
-                    break
+                    result = 3#el dia no tiene horas disponibles 
             else:
-                result = True #la fecha esta registrada pero los actividades ya se ejecutaron
-    else:
-        result = True # La fecha no esta registrada
-                
-    result = True
-    for i in student.getActivities():
-        if i.date == date:
-            
-            if i.getStatus() == "En curso":
-               if ((i.getStart_time() > end_time or start_time > i.getEnd_time())):
-                   result = True# ya existe la fecha y no tiene problemas con los demas horarios
-               else:
-                   result = False# tiene choque de horario
-                   break
-            else:
-               result = True #la fecha esta registrada pero los actividades ya se ejecutaron
+                result = 2 #la semana no tiene horas disponibles
         else:
-            result = True # La fecha no esta registrada
-    return result
+            result = 0 # La fecha no esta registrada
+    else:
+        result = 3
+                    
+    return result 
+    
+    
 
 
-start_date = datetime.strptime("2022/01/01", '%Y/%m/%d')
+'''start_date = datetime.strptime("2022/01/01", '%Y/%m/%d')
 end_date = datetime.strptime("2022/04/01", '%Y/%m/%d')
 start_time = datetime.strptime("9:00", '%H:%M')
 end_time = datetime.strptime("11:00", '%H:%M')
@@ -172,17 +179,20 @@ curso2 = course("mate",4,12,start_date2,end_date2,auxlist,carrera,"En curso")
 functions_admins.list_careers.append(carrera)
 functions_admins.courses.append(curso1)
 functions_admins.courses.append(curso2)
-estudiante = students("leiner","gergr",carrera,"rgrg",[])
+estudiante = students("leiner","gergr",carrera,"rgrg")
 list_students.append(estudiante)
 assign_course(list_students[0])
 assign_course(list_students[0])
 
 description = "estudiar"
 name_course = "Recreacion"
-date1 = datetime.strptime("2022/11/05", '%Y/%m/%d')
+date1 = datetime.strptime("2022/11/23", '%Y/%m/%d')
 status = "En curso"
-new_activities = activities(description,name_course,date1,start_time,end_time,status)
-control_dates.add_activities(list_students[0].shedule,new_activities)
+start_time2 = datetime.strptime("00:00", '%H:%M')
+end_time2 = datetime.strptime("20:00", '%H:%M')
+new_activities = activities(description,name_course,date1,start_time2,end_time2,status)
+add_activities(estudiante)
+#control_dates.add_activities(list_students[0].shedule,new_activities)
 for i in list_students[0].shedule:
     print("ano "+str(i.date_year))
     for a in i.list_months:
@@ -192,7 +202,7 @@ for i in list_students[0].shedule:
                 print("dia "+str(c.date))
                 print("tiempo consumido"+str(c.hours))
                 for j in c.list_activities:
-                    print("curso "+str(j.course))
+                    print("curso "+str(j.course))'''
                     
             
         
