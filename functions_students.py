@@ -8,6 +8,7 @@ import control_dates
 from obCourses import course
 from obclass_time import hours_class
 from obCareers import careers
+from tkinter import messagebox
 list_students = []#Almacena todos los estudiantes
 def register (name,email,career,password): 
     '''
@@ -37,7 +38,7 @@ def mod_careers(student):
     new_career = functions_admins.select_position_careers()
     new_career = functions_admins.careers[new_career]
     student.setCareer(new_career)
-def assign_course(student):
+def assign_course(student,course):
     '''
     Se recorre la lista de estudiantes para obtener el indice del estudiante que desea realizar la matricula
     se imprime la lista de cursos que estan disponibles en la carrera del estudiante
@@ -45,24 +46,19 @@ def assign_course(student):
     se llama una funcion para asignar los dias de clases del curso matriculado
     '''
     if len(functions_admins.courses)>0:
-        career = ""
-        aux_dic = {}
-        b = 0
-        course = functions_admins.select_course()
-        course = functions_admins.courses[course]
+        course = course.get()
+        course = returncourse(course)
         flag = False
         for i in student.getCourses():
             if i.getName() == course.getName():
-                print("El curso ya esta matriculado")
+                messagebox.showerror("Matricula de curso","El curso ya se encuentra matriculado por el estudiante")
                 flag = True
                 break
         if flag == False:
             student.courses.append(course)
-            print("El curso se matriculo con exito!.")
             control_dates.create_dates(course,student)
-    else:
-        #mensaje de error
-        print("No hay cursos creados")
+            messagebox.showinfo("Matricula de curso","El curso se matriculo con exito!.")
+        
 
 def add_activities(student):
     '''
@@ -154,7 +150,10 @@ def compare_date(student,date,start_time,end_time):
         result = 3
                     
     return result 
-    
+def returncourse(course):
+    for i in functions_admins.courses:
+        if course == i.getName():
+            return i
     
 
 

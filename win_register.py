@@ -1,4 +1,4 @@
-from ast import Lambda
+
 import tkinter as tk
 from tkinter import ttk,messagebox
 import functions_admins
@@ -33,11 +33,13 @@ def win_register_():
         sv_career = tk.StringVar()
         combobox_career = ttk.Combobox(winregister,values=list_careers,textvariable=sv_career,state="readonly").place(x=80,y=130)
         
-        tk.Button(winregister, text="Registrar", command=lambda:register_student(sv_name_student,sv_email_student,sv_career,sv_password_student)).place(x=80, y=160)
+        tk.Button(winregister, text="Registrar", command=lambda:[register_student(sv_name_student,sv_email_student,sv_career,sv_password_student),close(winregister)]).place(x=80, y=160)
         tk.Button(winregister, text="Salir", command=lambda:close(winregister)).place(x=80, y=190)
         winregister.mainloop()
+        
     else:
         messagebox.showinfo("Registro","No hay carreras disponibles")
+        
         
 def chargecareers():
     auxlist = []

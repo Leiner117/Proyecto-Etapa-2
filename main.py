@@ -4,7 +4,7 @@ import functions_admins
 from obCareers import careers
 import functions_students
 from win_register import win_register_
-
+import winmenu_admin,winmenu_student
 carrera1 = careers("computacion")
 carrera2 = careers("Fisica")
 carrera3 = careers("Ingenieria")
@@ -39,17 +39,17 @@ def check_login():
     password = sv_password.get()
     flag = False
     if rank == "Administrativo":
-        for i in functions_admins.admins:
+        for i in functions_admins.list_admins:
             if name == i.getName() and password == i.getPassword():
                 flag = True
-                #menu admins
+                winmenu_admin.menu(i)
                 break
         if flag == False:
             print("El usuario o la contraseña son incorrectos")
     elif rank == "Estudiante":
-        for a in functions_students.students:
+        for a in functions_students.list_students:
             if name == a.getName() and password == a.getPassword():
-                #menu estudiantes
+                winmenu_student.menu(a)
                 flag = True
                 break
         if flag == False:

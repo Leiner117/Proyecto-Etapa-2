@@ -3,8 +3,9 @@ from obAdmins import admins
 from obCourses import course
 from obCareers import careers
 from obclass_time import hours_class
+from tkinter import messagebox
 import control_dates
-admin = admins("admin",12345,10101)
+admin = admins("admin","12345",10101)
 list_admins = [admin]
 courses = []
 list_careers = []
@@ -19,7 +20,7 @@ def add_admins():
     list_admins.append(admin1)
 
 
-def add_courses():
+def add_courses(name_course,credit,start_date,end_date,days,careers):
     '''
     convierte la tupla de cursos en lista
     solicita los datos necesarios para crear un curso 
@@ -27,75 +28,30 @@ def add_courses():
     se cargan todos los dias correspondientes a la actividades de clases al estudiante
     
     '''
-    if len(list_careers) > 0:
-        i = 0
-        check = False
-        global courses
-        courses = list(courses)
+    check = False  
+    global courses
+    courses = list(courses)
+    for c in courses:
+        if name_course == c.name:
+            check = True
+            break
+    if check == False:
         
-        name_course = input("Ingrese el nombre del nuevo curso: ")
-        for c in courses:
-            if name_course == c.name:
-                check = True
-                break
-        if check == False:
-            credit = int(input("Ingrese la cantidad de creditos del curso: "))
-            school_hours = credit*3
-            start_date = input("fecha de inicio del curso'aaaa/mm/dd': ")
-            end_date = input("fecha de finalización del curso'aaaa/mm/dd': ") 
-                
-            try:
-                start_date = datetime.strptime(start_date, '%Y/%m/%d').strftime('%Y/%m/%d')
-                end_date = datetime.strptime(end_date, '%Y/%m/%d').strftime('%Y/%m/%d')
-            except ValueError:
-                print("\n No ha ingresado una fecha correcta...")
-            class_times = class_time()
-            careers_belongs = select_career()
-            status = "En curso"
-            new_course = course(name_course,credit,school_hours,start_date,end_date,class_times,careers_belongs,status)
-            courses.append(new_course)
-            i = i +1
-            print("El curso se agrego con exito!.")
-            #agregar lo de cargar fechas
-        else:
+        status = "En curso"
+        new_course = course(name_course,credit,start_date,end_date,status)
+        for a in days:
+            new_course.class_time.append(a)
+        for b in careers:
+            new_course.careers_belong.append(b)
+        courses.append(new_course)
+    else:
             #poner mensaje de error
-            print("El curso ya existe")
-                
+        messagebox.showerror("Agregar curso","El curso ya existe")
+        
         #control_dates.load_dates(courses)
         courses = tuple(courses)
         
-    else:
-        print("No se pueden registrar cursos si no existen carreras.")
-def class_time():
-    '''
-    Solicita los dias a la semana que va a recibir clases y las horas correspondientes
-    almacena los datos en una lista y la retorna
-    '''
-    aux_list = []
-    school_days = int(input("Ingrese la cantidad de dias a la semana que se imparten lecciones: "))
-    i = 0
-    while i < school_days:
-        
-        day = select_day()
-        start_time = input("Ingrese la hora de inicio de la clase: ")
-        start_time = datetime.strptime(start_time, '%H:%M')
-        end_time = input("Ingrese la hora de finalizacion de la clase: ")
-        end_time = datetime.strptime(end_time, '%H:%M')
-        hourclass = hours_class(day,start_time,end_time)
-        aux_list.append(hourclass)
-        i = i+1
-    return aux_list
-def select_day():
-    '''
-    Imprime los dias de la semana 
-    '''
-    a = 0
-    for i in week:
-        a = a+1
-        print(str(a)+"-"+week[i])
-    select = int(input("Ingrese el dia que desea registrar: "))
-    return select-1
-def add_careers():
+def add_careers(career):
     '''
     convierte la tupla de carreras en lista
     ingresa los datos necesarios 
@@ -104,7 +60,7 @@ def add_careers():
     global list_careers
     check = False
     list_careers = list(list_careers)
-    career = input("Ingrese el nombre de la carrera que desea agregar: ")
+    
     for i in list_careers:
         if career == i.name:
             check = True
@@ -115,9 +71,12 @@ def add_careers():
         list_careers.append(new_career)
         list_careers = tuple(list_careers)
         print("La carrera se agrego con exito!.")
+        messagebox.showinfo("Agregar carrera","La carrera se agrego con exito!.")
     else:
-        #agregar ventana de error
-        print("La carrera ya esta registrada")
+        messagebox.showerror("Agregar carrera","La carrera ya existe")
+        
+        
+        
 def select_career():
     '''
     Recorre la lista de carreras
@@ -264,8 +223,7 @@ def mod_class_times(course):
     '''
     global courses
     courses = list(courses)
-    new_class_times = class_time()
-    courses[course].setClass_time(new_class_times)
+
     courses = tuple(courses)
 def mod_careers(course):
     '''

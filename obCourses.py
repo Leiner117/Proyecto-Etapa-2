@@ -1,12 +1,12 @@
 class course():
-    def __init__(self,name,credits,school_hours,start_date,end_date,class_time,careers_belong,status):
+    def __init__(self,name,credits,start_date,end_date,status):
         self.name = name
         self.credits = credits
-        self.shool_hours = school_hours
+        self.shool_hours = credits*3
         self.start_date = start_date
         self.end_date = end_date
-        self.class_time = class_time
-        self.careers_belong = careers_belong
+        self.class_time = []
+        self.careers_belong = []
         self.status = status
     #gets
     def getName(self):
