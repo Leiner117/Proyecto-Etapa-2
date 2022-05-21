@@ -1,5 +1,6 @@
 
 from datetime import date, datetime
+from readline import insert_text
 import tkinter as tk
 from tkinter import ttk,messagebox
 import tkinter.font as tkFont
@@ -11,7 +12,7 @@ from obCourses import course
 from datetime import datetime
 import functions_students
 
-
+cont = 0
 
 '''
 - Cambiar de carrera
@@ -24,7 +25,7 @@ import functions_students
 -
 
 '''
-def menu(student):
+def menu(student,win):
     winmenustudent = tk.Toplevel()
     winmenustudent.title("Menu Estudiantes")
     winmenustudent.minsize(700,400)
@@ -33,13 +34,15 @@ def menu(student):
     
     tk.Button(winmenustudent, text="Cambiar carrera",font=fontStyle, command=None,height=2,width=14).place(x=150, y=70)
     tk.Button(winmenustudent, text="Matricular cursos",font=fontStyle, command=lambda:menuaddcourse(student),height=2,width=14).place(x=300, y=70)
-    tk.Button(winmenustudent, text="Agregar actividad",font=fontStyle, command=None,height=2,width=14).place(x=450, y=70)
+    tk.Button(winmenustudent, text="Agregar actividad",font=fontStyle, command=lambda:menuaddactivities(student),height=2,width=14).place(x=450, y=70)
     tk.Button(winmenustudent, text="Modificar curso",font=fontStyle, command=None,height=2,width=14).place(x=150, y=150)
     tk.Button(winmenustudent, text="actividades",font=fontStyle, command=None,height=2,width=14).place(x=300, y=150)
-    tk.Button(winmenustudent, text="Reportes",font=fontStyle, command=None,height=2,width=14).place(x=450, y=150)
-    tk.Button(winmenustudent, text="Salir",font=fontStyle, command=None,height=2,width=14).place(x=300, y=220)
+    tk.Button(winmenustudent, text="Reportes",font=fontStyle, command=lambda:menureports(student),height=2,width=14).place(x=450, y=150)
+    tk.Button(winmenustudent, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenustudent)],height=2,width=14).place(x=300, y=220)
     
     winmenustudent.mainloop()
+def show(win):
+    win.deiconify()
 def menuchangecareer():
     pass
 
@@ -56,6 +59,7 @@ def menuaddcourse(student):
     tk.Button(winmenucourse, text="Matricular",font=fontStyle, command=lambda:functions_students.assign_course(student,sv_course),height=2,width=14).place(x=300, y=220)
     tk.Button(winmenucourse, text="Salir",font=fontStyle, command=None,height=2,width=14).place(x=450, y=220)
     
+    
 def gencourses(student):
     auxlist = []
     for i in functions_admins.courses:
@@ -68,18 +72,114 @@ def gencourses(student):
 
 
 
-
-def menuaddactivities():
+def menuaddactivities(student):
+    winmenuactivities = tk.Toplevel()
+    winmenuactivities.title("Agregar actividad")
+    winmenuactivities.minsize(800,600)
+    fontStyle = tkFont.Font(family="Lucida Grande", size=12)
+    listcourses = coursestudent(student)
     
-    pass
+    lb_name_acti=tk.Label(winmenuactivities,text="Descripcion de la actividad:").place(x=10, y=40)
+    sv_name_acti = tk.StringVar()
+    e_name_acti= ttk.Entry(winmenuactivities, textvariable = sv_name_acti, width=30).place(x=165, y=40)
+    
+    lb_course= tk.Label(winmenuactivities,text="Asociar curso(opcional):").place(x=10, y=70)
+    sv_course = tk.StringVar()
+    combobox_course = ttk.Combobox(winmenuactivities,values =listcourses,textvariable=sv_course,state="readonly").place(x=150,y=70)
+    
+    lb_date=tk.Label(winmenuactivities,text="Fecha(aaaa/mm/dd):").place(x=10, y=100)
+    sv_date = tk.StringVar()
+    e_date= ttk.Entry(winmenuactivities, textvariable = sv_date, width=30).place(x=130, y=100)
+    
+    lb_startime=tk.Label(winmenuactivities,text="Hora de inicio(HH:MM):").place(x=10, y=130)
+    sv_startime = tk.StringVar()
+    e_startime= ttk.Entry(winmenuactivities, textvariable = sv_startime, width=30).place(x=150, y=130)
+        
+    lb_endtime=tk.Label(winmenuactivities,text="Hora de finalización(HH:MM):").place(x=10, y=160)
+    sv_endtime = tk.StringVar()
+    e_endtime= ttk.Entry(winmenuactivities, textvariable = sv_endtime, width=30).place(x=180, y=160)
+    
+    tk.Button(winmenuactivities, text="Agregar actividad",font=fontStyle, command=lambda:add_activities(student,sv_name_acti,sv_course,sv_date,sv_startime,sv_endtime),height=2,width=14).place(x=300, y=220)
+    tk.Button(winmenuactivities, text="Salir",font=fontStyle, command=lambda:winmenuactivities.destroy(),height=2,width=14).place(x=450, y=220)
+    
+    
+    winmenuactivities.mainloop()
+def add_activities(student,name,course,date,start_time,end_time):
+    strname = name.get()
+    strcourse = course.get()
+    strdate = date.get()
+    strstart_time = start_time.get()
+    strend_time = end_time.get()
+    
+    functions_students.add_activities(student,strname,strcourse,strdate,strstart_time,strend_time)
+    clearwin(name,course,date,start_time,end_time)
+    
+    
+        
+def coursestudent(student):
+    auxlist = []
+    for i in student.courses:
+        if i.status == "En curso":
+            auxlist.append(i.getName())
+    return auxlist
 def menumodcourse():
     pass
 def printactivities():
     pass
-def menureports():
-    pass
+def menureports(student):
+    winmenureports = tk.Toplevel()
+    winmenureports.title("Reportes")
+    winmenureports.minsize(700,400)
+    fontStyle = tkFont.Font(family="Lucida Grande", size=12)
+    
+    lb_date=tk.Label(winmenureports,text="Fecha de actividad:").place(x=10, y=40)
+    sv_date = tk.StringVar()
+    e_date= ttk.Entry(winmenureports, textvariable = sv_date, width=30).place(x=165, y=40)
+    
+    
+    lb_filter= tk.Label(winmenureports,text="Seleccione si desea generar el reporte del dia o la semana:").place(x=10, y=70)
+    sv_filter = tk.StringVar()
+    combobox_filter = ttk.Combobox(winmenureports,values =["Dia","Semana"],textvariable=sv_filter,state="readonly").place(x=275,y=70)
+    
+    tk.Button(winmenureports, text="Generar reporte",font=fontStyle, command=lambda:gen_report(student,sv_date,sv_filter,winmenureports),height=2,width=14).place(x=300, y=220)
+    tk.Button(winmenureports, text="Salir",font=fontStyle, command=lambda:winmenureports.destroy(),height=2,width=14).place(x=450, y=220)
+    
+def gen_report(student,date,filter,win):
+
+    if filter != '':
+        report = functions_students.gen_reports(student,date,filter)
+        if filter == "Dia":
+            i = 0
+            fontStyle = tkFont.Font(family="Lucida Grande", size=12)
+            while len(report) > cont:
+                descripcion = report[cont][0]
+                Curso = report[cont][1]
+                Fecha = report[cont][2]
+                Horas = report[cont][3]
+                estado = report[cont][5]
+                lb_date=tk.Label(win,text="Reporte:").place(x=10, y=100)
+                listbox = tk.Listbox(win).place(x=10,y=130)
+                listbox.insert(0,descripcion)
+                listbox.insert(1,Curso)
+                listbox.insert(2,Fecha)
+                listbox.insert(3,Horas)
+                listbox.insert(4,estado)
+
+                
 
 
+                
+               
+
+    else:
+        messagebox.showerror("Reportes","Tiene que ingresar si desea generar el reporte semanal o diario")
+def clearwin(name,course,date,start_time,end_time):
+    name.set('')
+    course.set('')
+    date.set('')
+    start_time.set('')
+    end_time.set('')
+    
 
 def close(win):
     win.destroy()

@@ -13,7 +13,7 @@ from datetime import datetime
 listdays = []
 careers_list = []
 cont = 0
-def menu(i):
+def menu(i,win):
     winmenuadmin = tk.Toplevel()
     winmenuadmin.title("Menu administrativo")
     winmenuadmin.minsize(700,400)
@@ -21,20 +21,24 @@ def menu(i):
     lb_name=tk.Label(winmenuadmin,text="Bienvenido: "+i.getName(),font=fontStyle).place(x=10, y=10)
     
     
-    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:winCourses(i),height=2,width=8).place(x=300, y=70)
-    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=menucareers,height=2,width=8).place(x=300, y=150)
-    tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=None,height=2,width=8).place(x=300, y=230)
+    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:[winCourses(i),hide(winmenuadmin)],height=2,width=8).place(x=300, y=70)
+    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:[menucareers(),hide(winmenuadmin)],height=2,width=8).place(x=300, y=150)
+    tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenuadmin)],height=2,width=8).place(x=300, y=230)
     winmenuadmin.mainloop()
 
 
 
-
+def hide(win):
+    win.withdraw()
+def show(win):
+    win.deiconify()
 
 
 
 def menucareers():
 
     wincareers = tk.Toplevel()
+
     wincareers.title("Manejo de carreras")
     wincareers.minsize(700,400)
     
@@ -48,7 +52,7 @@ def menucareers():
     e_namecareer= ttk.Entry(wincareers, textvariable = sv_namecareer, width=30).place(x=140, y=40)
 
     
-    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career(sv_namecareer),height=2,width=15).place(x=10, y=300)
+    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career(sv_namecareer,wincareers),height=2,width=15).place(x=10, y=300)
     tk.Button(wincareers, text="modifica carrera",command=winModCareer,height=2,width=15).place(x=150, y=300)
     tk.Button(wincareers, text="Salir",command=lambda:close(wincareers),height=2,width=15).place(x=290, y=300)
 
@@ -58,6 +62,7 @@ def menucareers():
     wincareers.mainloop()
 def winModCareer():
     winmod = tk.Toplevel()
+    winmod.attributes("-topmost", 1)
     winmod.title("Manejo de carreras")
     winmod.minsize(700,400)
     
@@ -72,9 +77,9 @@ def winModCareer():
     
     tk.Button(winmod, text="modifica carrera",command=lambda:[mod_career(sv_career,sv_namecareer),close(winmod)],height=2,width=15).place(x=10, y=300)
     winmod.mainloop()
-def add_career(name):
+def add_career(name,win):
     name = name.get()
-    functions_admins.add_careers(name)
+    functions_admins.add_careers(name,win)
 def mod_career(name,new_name):
     name = name.get()
     obcourse = None
@@ -122,43 +127,45 @@ def winCourses(i):
         lb_endtime=tk.Label(winmenucourse,text="Hora de finalización(HH:MM):").place(x=10, y=220)
         sv_endtime = tk.StringVar()
         e_endtime= ttk.Entry(winmenucourse, textvariable = sv_endtime, width=30).place(x=180, y=220)
-        tk.Button(winmenucourse, text="Agregar dia de clases",command=lambda:create_hour(sv_week,sv_startime,sv_endtime),height=2,width=20).place(x=10, y=250)
+        tk.Button(winmenucourse, text="Agregar dia de clases",command=lambda:[create_hour(sv_week,sv_startime,sv_endtime,week),clear_setdays(sv_startime,sv_endtime,sv_week)],height=2,width=20).place(x=10, y=250)
 
         list_careers = listcareers()
         lb_career= tk.Label(winmenucourse,text="Carrera asociada:").place(x=10, y=300)
         sv_career = tk.StringVar()
         combobox_career = ttk.Combobox(winmenucourse,values =list_careers,textvariable=sv_career,state="readonly").place(x=110,y=300)
 
-        tk.Button(winmenucourse, text="Asociar carrera",command=lambda:create_listcareer(sv_career),height=2,width=20).place(x=10, y=350)
+        tk.Button(winmenucourse, text="Asociar carrera",command=lambda:[create_listcareer(sv_career),clear_career(sv_career)],height=2,width=20).place(x=10, y=350)
         
-        tk.Button(winmenucourse, text="Register",command=lambda:[add_course(sv_name_course.get(),sv_credits.get(),sv_startdate.get(),sv_enddate.get(),listdays,careers_list),clear_window(sv_name_course,sv_credits,sv_startdate,sv_enddate,sv_startime,sv_endtime,sv_week)],height=2,width=20).place(x=10, y=400)
+        tk.Button(winmenucourse, text="Registrar curso",command=lambda:[add_course(sv_name_course.get(),sv_credits.get(),sv_startdate.get(),sv_enddate.get(),listdays,careers_list),clear_window(sv_name_course,sv_credits,sv_startdate,sv_enddate)],height=2,width=20).place(x=10, y=400)
         
-    
+
         winmenucourse.mainloop()
     else:
         messagebox.showinfo("Agregar curso","No Existen carreras disponibles")
 
 def add_course(name,credits,start_date,end_date,days,career_list):
-    try:
-        start_date = datetime.strptime(start_date, '%Y/%m/%d')
-        end_date = datetime.strptime(end_date, '%Y/%m/%d')
-        functions_admins.add_courses(name,credits,start_date,end_date,days,career_list)
-        messagebox.showinfo("Agregar curso","El curso se agrego con exito")
-        
-    except:
-        
-        messagebox.showinfo("Agregar curso","No ingreso el formato de hora correcto")
-    
+    if len(days) > 0 and len(career_list) > 0:
+        try:
+            start_date = datetime.strptime(start_date, '%Y/%m/%d')
+            end_date = datetime.strptime(end_date, '%Y/%m/%d')
+            functions_admins.add_courses(name,credits,start_date,end_date,days,career_list)
+            
+        except:
+            
+            messagebox.showinfo("Agregar curso","No ingreso el formato de la fecha correcto")
+    else:
+        messagebox.showerror("Agregar curso","Tienes que asociar dias de clases y una carrera al curso")
 def create_listcareer(c):
     career = functions_admins.select_position_careers(c.get())
     careers_list.append(career)
-def create_hour(day,starttime,endtime):
+def create_hour(day,starttime,endtime,week):
+    day = functions_admins.selectday(day.get(),week)
     start_time = starttime.get()
     end_time = endtime.get()
     try:
        start_time = datetime.strptime(start_time, '%H:%M')
        end_time = datetime.strptime(end_time, '%H:%M')
-       obhour = hours_class(day.get(),start_time,end_time)
+       obhour = hours_class(day,start_time,end_time)
        listdays.append(obhour)
     except:
         messagebox.showinfo("Agregar curso","No ingreso el formato de hora correcto")
@@ -167,18 +174,23 @@ def listcareers():
     for i in functions_admins.list_careers:
         auxlist.append(i.getName())
     return auxlist
-def clear_window(name,credits,start_date,end_date,start_time,end_time,week):
+def clear_window(name,credits,start_date,end_date):
     global careers_list,listdays
     name.set('')
     credits.set('')
     start_date.set('')
     end_date.set('')
+    listdays = []
+    careers_list = []
+    
+def clear_setdays(start_time,end_time,week):
     start_time.set('')
     end_time.set('')
     week.set('')
-    listdays.clear
-    careers_list.clear
+def clear_career(career):
+    career.set('')
 carrera = careers("computacion")
+
 estudiante = students("leiner","gergr",carrera,"rgrg")
 def close(win):
     win.destroy()

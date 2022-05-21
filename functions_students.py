@@ -60,7 +60,7 @@ def assign_course(student,course):
             messagebox.showinfo("Matricula de curso","El curso se matriculo con exito!.")
         
 
-def add_activities(student):
+def add_activities(student,description,course,start_date,start_time,end_time):
     '''
     Se genera el indice del estudiante 
     Se solicita la informacion de la actividad
@@ -68,52 +68,34 @@ def add_activities(student):
     se utiliza un diccionario indexado para almacenar las actividades
     '''
 
-    description = str(input("Ingrese la descripcion de la actividad: "))
-    print("La actividad esta asociada a un curso?\n1.Si\n2.No")
-    opselect = int(input("-->"))
-    if opselect == 1:
-        course = course_activities(student)
-    elif opselect == 2:
+    if course == '':
         course = "Recreacion"
-    start_date = input("fecha de la actividad'aaaa/mm/dd': ")
    
     try:
         start_date = datetime.strptime(start_date, '%Y/%m/%d')
     except ValueError:
-        print("\n No ha ingresado una fecha correcta...")
-        add_activities()
-    start_time = input("Ingrese la hora de inicio de la actividad: ")
-    start_time = datetime.strptime(start_time, '%H:%M')
-    end_time = input("Ingrese la hora de conclusion de la actividad: ")
-    end_time = datetime.strptime(end_time, '%H:%M')
+        messagebox.showerror("Agregar actividad","El formato de la fecha no es correcto")
+        exit()
+        
+    try:
+        start_time = datetime.strptime(start_time, '%H:%M')
+        end_time = datetime.strptime(end_time, '%H:%M')
+    except:
+        messagebox.showerror("Agregar actividad","El formato de hora no es correcto")
+        exit()
     result = compare_date(student,start_date,start_time,end_time)
     if result == 0:
         status = "En curso"
         new_activities = activities(description,course,start_date,start_time,end_time,status)
         control_dates.add_activities(student.shedule,new_activities)
-        print("La actividad se agrego con exito")
+        messagebox.showinfo("Agregar actividad","La actividad se agrego con exito!.")
     elif result == 1:
-        print("Tienes un choque en tu horario, no puedes agregar esta actividad.")
+        messagebox.showerror("Agregar actividad","La actividad tiene un choque de horario.")
     elif result == 2:
-        print("Las horas semanales superan el limite.")
+         messagebox.showerror("Agregar actividad","La actividad supera las horas semanales.")
     elif result == 3:
-        print("Las horas diarias superan el limite.")
-def course_activities(student):
-    '''
-    Imprime la lista de cursos matriculados y en curso para asociar alguna actividad
-    '''
-    e = 0
-    
-    for i in student.courses:
-        e = e+1
-        if i.status == "En curso":
-            print("-"+i.getName())
-    course = (input("Ingrese el curso que desea: "))
-    for a in student.courses:
-        if course == a.getName():
-            return a
-    else:
-        print("El curso ingresado no esta matriculado por el estudiante")
+        messagebox.showerror("Agregar actividad","La actividad supera las horas diarias.")
+
 def compare_date(student,date,start_time,end_time):
     '''
     recorre el diccionario indexado de actividades
@@ -155,8 +137,50 @@ def returncourse(course):
         if course == i.getName():
             return i
     
-
-
+def gen_reports(student,date,filter):
+    date = date.get()
+    filter = filter.get()
+    try:
+        date = datetime.strptime(date, '%Y/%m/%d')
+        
+    except:
+        messagebox.showerror("Agregar actividad","El formato de fecha no es correcto")
+        exit()
+    if filter == "Semana":
+        week= control_dates.returnweek(student.shedule,date.year,date)
+        auxlist = []
+        
+        totalactivities = len(week.list_days)
+        totalhours = week.hours_week
+        totalhoursav = 4320-totalhours
+        auxlist.append(totalactivities)
+        auxlist.append(totalhours)
+        auxlist.append(totalhoursav)
+        return auxlist
+            
+    else: 
+        day = control_dates.returndays(student.shedule,date)
+        report = gen_reports_days(day)
+        return report
+def gen_reports_days(day):
+    auxlist = []
+    for i in day.list_activities:
+        description = i.getDescripcion()
+        course = i.getCourse()
+        date = i.getDate()
+        hours = i.end_time-i.start_time
+        hoursav = (720 - ((i.end_time.second-i.start_time.second)//60))//60
+        status = i.status
+        auxlist2 = []
+        auxlist2.append(description)
+        auxlist2.append(course)
+        auxlist2.append(date)
+        auxlist2.append(hours)
+        auxlist2.append(hoursav)
+        auxlist2.append(status)
+        auxlist.append(auxlist2)
+        
+    
 '''start_date = datetime.strptime("2022/01/01", '%Y/%m/%d')
 end_date = datetime.strptime("2022/04/01", '%Y/%m/%d')
 start_time = datetime.strptime("9:00", '%H:%M')

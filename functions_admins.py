@@ -9,7 +9,7 @@ admin = admins("admin","12345",10101)
 list_admins = [admin]
 courses = []
 list_careers = []
-week = {1:"LUNES",2:"MARTES",3:"MIERCOLES",4:"JUEVES",5:"VIERNES",6:"SABADO",7:"DOMINGO"}
+#week = ["LUNES","MARTES","MIERCOLES","JUEVES","VIERNES","SABADO","DOMINGO"]
 
 def add_admins():
     ''' Agrega administradoreas a la lista, guardando los datos solicitados en una lista anidada'''
@@ -28,6 +28,11 @@ def add_courses(name_course,credit,start_date,end_date,days,careers):
     se cargan todos los dias correspondientes a la actividades de clases al estudiante
     
     '''
+    try:
+        credit = int(credit)
+    except:
+        messagebox.showerror("Agregar curso","Tiene que ingresar los creditos en formato numero")
+        exit()
     check = False  
     global courses
     courses = list(courses)
@@ -44,14 +49,18 @@ def add_courses(name_course,credit,start_date,end_date,days,careers):
         for b in careers:
             new_course.careers_belong.append(b)
         courses.append(new_course)
+        messagebox.showinfo("Agregar curso","El curso se agrego con exito")
     else:
             #poner mensaje de error
         messagebox.showerror("Agregar curso","El curso ya existe")
         
         #control_dates.load_dates(courses)
         courses = tuple(courses)
-        
-def add_careers(career):
+def selectday(day,week):
+    for i in week:
+        if i == day:
+            return week.index(i)
+def add_careers(career,win):
     '''
     convierte la tupla de carreras en lista
     ingresa los datos necesarios 
@@ -71,7 +80,7 @@ def add_careers(career):
         list_careers.append(new_career)
         list_careers = tuple(list_careers)
         print("La carrera se agrego con exito!.")
-        messagebox.showinfo("Agregar carrera","La carrera se agrego con exito!.")
+        messagebox.showinfo("Agregar carrera","La carrera se agrego con exito!.",parent =win)
     else:
         messagebox.showerror("Agregar carrera","La carrera ya existe")
         
