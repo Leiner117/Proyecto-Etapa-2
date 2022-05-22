@@ -87,6 +87,7 @@ def add_activities(student,description,course,start_date,start_time,end_time):
     if result == 0:
         status = "En curso"
         new_activities = activities(description,course,start_date,start_time,end_time,status)
+        student.activities.append(new_activities)
         control_dates.add_activities(student.shedule,new_activities)
         messagebox.showinfo("Agregar actividad","La actividad se agrego con exito!.")
     elif result == 1:

@@ -6,6 +6,7 @@ class students:
         self.password = password
         self.courses = []
         self.shedule = []
+        self.activities = []
     def getName(self):
         return self.name
     def getEmail(self):

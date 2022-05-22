@@ -15,4 +15,5 @@ class hours_class:
         self.start_time = start_time
     def setEnd_time(self,end_time):
         self.end_time = end_time
-    
+    def __str__(self):
+        return f"[{self.day},{self.start_time},{self.end_time}]"

@@ -5,3 +5,5 @@ class careers():
         self.name = name
     def getName(self):
         return self.name    
+    def __str__(self):
+        return f"[{self.name}]"

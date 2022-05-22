@@ -22,7 +22,7 @@ class course():
     def getClass_time(self):
         return self.class_time
     def getCareers_belong(self):
-        return self.class_time
+        return self.careers_belong
     def getStatus(self):
         return self.status
     
