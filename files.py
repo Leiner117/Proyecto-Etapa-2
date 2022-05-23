@@ -37,7 +37,7 @@ def load_courses():
         filecourses = open("courses.txt","r")
     except FileNotFoundError:
         create_file_courses()
-        exit()
+        return
     try:
         flag = True
         while flag == True:
@@ -114,7 +114,7 @@ def load_file_career():
         filecareers = open("careers.txt","r")
     except FileNotFoundError:
         create_file_career()
-        exit()
+        return
     try:
         
         lista = list(functions_admins.list_careers)
@@ -129,7 +129,6 @@ def load_file_career():
                 Flag = False
         filecareers.close()
         functions_admins.list_careers = lista
-        print(functions_admins.list_careers)
     except:
         messagebox.showerror("Lectura de archivos","Error en la lectura del archivo externo")
 
@@ -153,7 +152,7 @@ def load_file_admins():
         fileadmins = open("admins.txt","r")
     except FileNotFoundError:
         create_file_admins()
-        exit()
+        return
     try:
         flag = True
         while flag == True:
@@ -219,7 +218,7 @@ def load_file_students():
         filecourse = open("students.txt","r")
     except FileNotFoundError:
         create_file_students()
-        exit()
+        return
     try:
         
         flag = True

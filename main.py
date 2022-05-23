@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import functions_admins
 from obCareers import careers
 import functions_students
@@ -43,20 +44,22 @@ def check_login():
         for i in functions_admins.list_admins:
             if name == i.getName() and password == i.getPassword():
                 flag = True
+                clear(sv_nombre,sv_password,sv_rank)
                 ventana_principal.withdraw()
                 winmenu_admin.menu(i,ventana_principal)
                 break
         if flag == False:
-            print("El usuario o la contraseña son incorrectos")
+            messagebox.showerror("Login","El usuario o contraseña son incorrectos")
     elif rank == "Estudiante":
         for a in functions_students.list_students:
             if name == a.getName() and password == a.getPassword():
+                clear(sv_nombre,sv_password,sv_rank)
                 ventana_principal.withdraw()
                 winmenu_student.menu(a,ventana_principal)
                 flag = True
                 break
         if flag == False:
-            print("El usuario o la contraseña son incorrectos")
+            messagebox.showerror("Login","El usuario o contraseña son incorrectos")
         
 #botónes de acción de la ventana
 
@@ -66,5 +69,9 @@ tk.Button(ventana_principal, text="Iniciar Sesion", command=check_login).place(x
 tk.Button(ventana_principal, text="Registarse", command=win_register_).place(x=80, y=160)
 tk.Button(ventana_principal, text="Salir", command=close).place(x=80, y=190)
 
+def clear(name,password,rank):
+    name.set('')
+    password.set('')
+    rank.set('')
 
 ventana_principal.mainloop()

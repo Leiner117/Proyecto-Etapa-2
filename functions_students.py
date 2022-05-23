@@ -77,14 +77,14 @@ def add_activities(student,description,course,start_date,start_time,end_time,che
         start_date = datetime.strptime(start_date, '%Y/%m/%d')
     except ValueError:
         messagebox.showerror("Agregar actividad","El formato de la fecha no es correcto")
-        exit()
+        return
         
     try:
         start_time = datetime.strptime(start_time, '%H:%M')
         end_time = datetime.strptime(end_time, '%H:%M')
     except:
         messagebox.showerror("Agregar actividad","El formato de hora no es correcto")
-        exit()
+        return
     result = compare_date(student,start_date,start_time,end_time)
     if result == 0:
         status = "En curso"

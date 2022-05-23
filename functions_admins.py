@@ -12,7 +12,7 @@ list_careers = []
 #week = ["LUNES","MARTES","MIERCOLES","JUEVES","VIERNES","SABADO","DOMINGO"]
 
 def add_admins():
-    ''' Agrega administradoreas a la lista, guardando los datos solicitados en una lista anidada'''
+    
     name = input("Ingrese su nombre completo: ")
     password = input("Ingrese una contraseña: ")
     phone_number = int(input("Ingrese su numero de telefono: "))
@@ -79,7 +79,6 @@ def add_careers(career,win):
         new_career = careers(career)
         list_careers.append(new_career)
         list_careers = tuple(list_careers)
-        print("La carrera se agrego con exito!.")
         messagebox.showinfo("Agregar carrera","La carrera se agrego con exito!.",parent =win)
     else:
         messagebox.showerror("Agregar carrera","La carrera ya existe")

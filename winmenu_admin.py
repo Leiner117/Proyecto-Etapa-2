@@ -23,7 +23,7 @@ def menu(i,win):
     btn_checksave = tk.Checkbutton(winmenuadmin,variable=sv_checksave).place(x= 540,y =15)
     tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:[winCourses(i,sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=70)
     tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:[menucareers(sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=150)
-    tk.Button(winmenuadmin, text="Guardar cambios",font=fontStyle, command=save_changes,height=2,width=8).place(x=300, y=230)
+    tk.Button(winmenuadmin, text="Guardar cambios",font=fontStyle, command=save_changes,height=2,width=15).place(x=300, y=230)
     tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenuadmin)],height=2,width=8).place(x=300, y=310)
     winmenuadmin.mainloop()
 
@@ -57,7 +57,7 @@ def menucareers(check):
     e_namecareer= ttk.Entry(wincareers, textvariable = sv_namecareer, width=30).place(x=140, y=40)
 
     
-    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career(sv_namecareer,wincareers,check),height=2,width=15).place(x=10, y=300)
+    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career[(sv_namecareer,wincareers,check),close(wincareers)],height=2,width=15).place(x=10, y=300)
     tk.Button(wincareers, text="modifica carrera",command=lambda:winModCareer(check),height=2,width=15).place(x=150, y=300)
     tk.Button(wincareers, text="Salir",command=lambda:close(wincareers),height=2,width=15).place(x=290, y=300)
 
@@ -70,12 +70,12 @@ def winModCareer(check):
     winmod.title("Manejo de carreras")
     winmod.minsize(700,400)
     
-    lb_namecareer=tk.Label(winmod,text="Nombre de la carrera:").place(x=10, y=40)
+    lb_namecareer=tk.Label(winmod,text="Nuevo nombre de la carrera:").place(x=10, y=40)
     sv_namecareer = tk.StringVar()
-    e_namecareer= ttk.Entry(winmod, textvariable = sv_namecareer, width=30).place(x=140, y=40)
+    e_namecareer= ttk.Entry(winmod, textvariable = sv_namecareer, width=30).place(x=145, y=40)
     
     list_careers = listcareers()
-    lb_career= tk.Label(winmod,text="Carrera asociada:").place(x=10, y=90)
+    lb_career= tk.Label(winmod,text="Carrera:").place(x=10, y=90)
     sv_career = tk.StringVar()
     combobox_career = ttk.Combobox(winmod,values =list_careers,textvariable=sv_career,state="readonly").place(x=110,y=90)
     

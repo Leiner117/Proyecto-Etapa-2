@@ -37,13 +37,15 @@ def menu(student,win):
     btn_checksave = tk.Checkbutton(winmenustudent,variable=sv_checksave).place(x= 530,y =10)
     tk.Button(winmenustudent, text="Cambiar carrera",font=fontStyle, command=None,height=2,width=14).place(x=150, y=70)
     tk.Button(winmenustudent, text="Matricular cursos",font=fontStyle, command=lambda:menuaddcourse(student,sv_checksave.get()),height=2,width=14).place(x=300, y=70)
-    tk.Button(winmenustudent, text="Agregar actividad",font=fontStyle, command=lambda:menuaddactivities(student),height=2,width=14).place(x=450, y=70)
-    tk.Button(winmenustudent, text="actividades",font=fontStyle, command=None,height=2,width=14).place(x=300, y=150)
+    tk.Button(winmenustudent, text="Agregar actividad",font=fontStyle, command=lambda:menuaddactivities(student,sv_checksave.get()),height=2,width=14).place(x=450, y=70)
+    tk.Button(winmenustudent, text="actividades",font=fontStyle, command=lambda:printactivities(student,sv_checksave.get()),height=2,width=14).place(x=300, y=150)
+    tk.Button(winmenustudent, text="Guardar cambios",font=fontStyle, command=save_change,height=2,width=14).place(x=150, y=150)
     tk.Button(winmenustudent, text="Reportes",font=fontStyle, command=lambda:menureports(student),height=2,width=14).place(x=450, y=150)
     tk.Button(winmenustudent, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenustudent)],height=2,width=14).place(x=300, y=220)
     
     winmenustudent.mainloop()
-
+def save_change():
+    files.create_file_students()
 #-----------FUNCION MOSTRAR VENTANA-----------#
 def show(win):
     win.deiconify()
@@ -64,7 +66,7 @@ def menuaddcourse(student,check):
     sv_course = tk.StringVar()
     combobox_course = ttk.Combobox(winmenucourse,values =listcourses,textvariable=sv_course,state="readonly").place(x=80,y=40)
     tk.Button(winmenucourse, text="Matricular",font=fontStyle, command=lambda:functions_students.assign_course(student,sv_course,check),height=2,width=14).place(x=300, y=220)
-    tk.Button(winmenucourse, text="Salir",font=fontStyle, command=close(winmenucourse),height=2,width=14).place(x=450, y=220)
+    tk.Button(winmenucourse, text="Salir",font=fontStyle, command=lambda:close(winmenucourse),height=2,width=14).place(x=450, y=220)
     
 def gencourses(student):
     auxlist = []
@@ -128,13 +130,46 @@ def coursestudent(student):
             auxlist.append(i.getName())
     return auxlist
 
-#-----------MENU MODIFICAR ESTADO DE UN CURSO-----------#
-
+#-----------FUNCION CAMBIAR ESTADO ACTIVIDADES-----------#
+def printactivities(student,check):
+    winmenuactivities = tk.Toplevel()
+    winmenuactivities.title("Cambiar estado de actividades")
+    winmenuactivities.minsize(700,400)
+    fontStyle = tkFont.Font(family="Lucida Grande", size=12)
+    listac = list_activities(student)
+    lb_activities= tk.Label(winmenuactivities,text="Actividad:").place(x=10, y=40)
+    sv_activities = tk.StringVar()
+    combobox_activities = ttk.Combobox(winmenuactivities,values =listac,textvariable=sv_activities,state="readonly").place(x=80,y=40)
     
-#-----------FUNCION IMPRIMIR ACTIVIDADES-----------#
-def printactivities():
-    pass
-
+    lb_status= tk.Label(winmenuactivities,text="Estado:").place(x=10, y=70)
+    sv_status = tk.StringVar()
+    combobox_status = ttk.Combobox(winmenuactivities,values =["Realizada"],textvariable=sv_status,state="readonly").place(x=80,y=70)
+    
+    tk.Button(winmenuactivities, text="Realizar el cambio",font=fontStyle, command=lambda:[mod_activities(sv_status,sv_activities,check,student)],height=2,width=14).place(x=85, y=130)
+    tk.Button(winmenuactivities, text="Salir",font=fontStyle, command=lambda:close(winmenuactivities),height=2,width=14).place(x=85, y=210)
+    
+    winmenuactivities.mainloop()
+def list_activities(student):
+    auxlist = []
+    for i in student.activities:
+        if i.status == "En curso":
+            des = i.getDescripcion()
+            course = i.course
+            ac = str(des)+"/"+str(course)
+            auxlist.append(ac)
+    return auxlist
+def mod_activities(status,ac,check,student):
+        ac = ac.get()
+        ac = ac.split("/")
+        status = status.get()
+        for i in student.activities:
+            if i.getDescripcion() == ac[0] and i.getCourse() == ac[1]:
+                i.setStatus(status)
+                messagebox.showinfo("Actividades","Su actividad cambio con exito de estado")
+                break
+                
+            if check == 1:
+                files.create_file_students()
 #-----------MENU REPORTES-----------#
 def menureports(student):
     winmenureports = tk.Toplevel()
@@ -149,10 +184,10 @@ def menureports(student):
     
     lb_filter= tk.Label(winmenureports,text="Seleccione si desea generar el reporte del dia o la semana:").place(x=10, y=70)
     sv_filter = tk.StringVar()
-    combobox_filter = ttk.Combobox(winmenureports,values =["Dia","Semana"],textvariable=sv_filter,state="readonly").place(x=275,y=70)
+    combobox_filter = ttk.Combobox(winmenureports,values =["Dia","Semana"],textvariable=sv_filter,state="readonly").place(x=300,y=70)
     
     tk.Button(winmenureports, text="Generar reporte",font=fontStyle, command=lambda:gen_report(student,sv_date,sv_filter,winmenureports),height=2,width=14).place(x=300, y=220)
-    tk.Button(winmenureports, text="Salir",font=fontStyle, command=lambda:winmenureports.destroy(),height=2,width=14).place(x=450, y=220)
+    tk.Button(winmenureports, text="Salir",font=fontStyle, command=lambda:close(winmenureports),height=2,width=14).place(x=450, y=220)
     
 def gen_report(student,date,filter,win):
 
@@ -196,4 +231,5 @@ def clearwin(name,course,date,start_time,end_time):
 #-----------FUNCION CERRAR VENTANAS-----------#
 def close(win):
     win.destroy()
+
 
