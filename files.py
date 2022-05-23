@@ -1,14 +1,15 @@
-import email
-from unicodedata import name
+
 import functions_students
 import functions_admins
 from obCareers import careers
 from obclass_time import hours_class
 from obCourses import course
-from datetime import datetime
+from datetime import date, datetime
 from tkinter import messagebox
 from obActivities import activities
 from obStudents import students
+import control_dates
+from obAdmins import admins
 #-----------Escritura/lectura cursos-----------#
 
 def create_file_courses():
@@ -34,6 +35,10 @@ def load_courses():
     lista = []
     try:
         filecourses = open("courses.txt","r")
+    except FileNotFoundError:
+        create_file_courses()
+        exit()
+    try:
         flag = True
         while flag == True:
             line = filecourses.readline()
@@ -53,13 +58,10 @@ def load_courses():
             else:
                 functions_admins.courses = lista
                 flag = False
-        
-                
-                
-                    
-                
     except:
-        messagebox.showerror("Archivos","Hay un problema con la lectura del archivo")
+        messagebox.showerror("Lectura de archivo","Error en la lectura de archivo externo")     
+    
+
 def load_list_career(list_career):
     aux = []
     for i in list_career:
@@ -75,7 +77,8 @@ def load_list_classtime(list_classtime):
         ob = hours_class(day,starttime,endtime)
         aux.append(ob)
     return aux
-            
+    
+       
 def genlist_careers(i):
     aux = []
     for a in i.careers_belong:
@@ -96,17 +99,24 @@ def list_days(i):
 
 #-----------Escritura/lectura carreras-----------#
 
+
 def create_file_career():
     try:
         filecareers = open("careers.txt","w")
         for i in functions_admins.list_careers:
             name = i.getName()
             filecareers.write(name+"\n")
+        filecareers.close()
     except:
         messagebox.showerror("Escritura de archivos","Error en la escritura del archivo externo")
 def load_file_career():
     try:
         filecareers = open("careers.txt","r")
+    except FileNotFoundError:
+        create_file_career()
+        exit()
+    try:
+        
         lista = list(functions_admins.list_careers)
         Flag = True
         while Flag == True:
@@ -117,15 +127,51 @@ def load_file_career():
             else:
             
                 Flag = False
+        filecareers.close()
         functions_admins.list_careers = lista
         print(functions_admins.list_careers)
     except:
         messagebox.showerror("Lectura de archivos","Error en la lectura del archivo externo")
+
+
 #-----------Escritura/lectura admins-----------#
 def create_file_admins():
-    pass
+    try:
+        fileadmins = open("admins.txt","w")
+        for i in functions_admins.list_admins:
+            name = i.getName()
+            password = i.getPassword()
+            phone = i.getPhone()
+            fileadmins.write(str(name)+"-"+str(password)+"-"+str(phone)+"\n")
+            
+        fileadmins.close()
+            
+    except:
+        messagebox.showerror("Archivos","Hay un problema con la escritura del archivo")
+def load_file_admins():
+    try:
+        fileadmins = open("admins.txt","r")
+    except FileNotFoundError:
+        create_file_admins()
+        exit()
+    try:
+        flag = True
+        while flag == True:
+            line = fileadmins.readline()
+            if line != '':
+                line = line.split("-")
+                name= line[0]
+                password = line[1]
+                phone = line[2]
+                phone = phone.replace("\n",'')
+                new_admin = admins(name,password,phone)
+            else:
+                flag = False
+            
+    except:
+        messagebox.showerror("Lectura de archivos","Error en la lectura del archivo externo")
 
-
+        
 #-----------Escritura/lectura estudiantes-----------#
 def create_file_students():
     try:
@@ -138,9 +184,10 @@ def create_file_students():
             name_courses = create_namecourses(i)
             shedule = create_activities(i)
             filecourses.write(str(name)+"-"+str(email)+"-"+str(career)+"-"+str(password)+"-"+str(name_courses)+"-"+str(shedule)+"\n")
-            
+        filecourses.close()
     except:
         messagebox.showerror("Escritura de archivos","Error en la escritura del archivo externo")
+
 
 def create_namecourses(i):
     auxlist = []
@@ -166,9 +213,15 @@ def create_activities(i):
         auxlist.append(auxlist2)
     return auxlist
         
+        
 def load_file_students():
     try:
         filecourse = open("students.txt","r")
+    except FileNotFoundError:
+        create_file_students()
+        exit()
+    try:
+        
         flag = True
         while flag == True:
             line = filecourse.readline()
@@ -176,43 +229,43 @@ def load_file_students():
                 line = line.split("-")
                 name = line[0]
                 email = line[1]
-                career = line[2]
+                career = functions_admins.select_position_careers(line[2])
                 password = line[3]
-                name_courses = eval(line[4])
-                shedule = eval(line[5])
                 
+                ob = students(name,email,career,password)
+                name_courses = load_listcourses(eval(line[4]),ob)
+                shedule = load_activities(eval(line[5]),ob)
+                ob.courses = name_courses
+                ob.activities = shedule
+                functions_students.list_students.append(ob)
+            else:
+                flag = False
+        filecourse.close()
     except:
         messagebox.showerror("Lectura de archivos","Error en la lectura del archivo")
+def load_listcourses(list_courses,ob):
+    auxlist = []
+    for a in functions_admins.courses:
+        for i in list_courses:
+            if i == a.getName():
+                auxlist.append(a)
+    for b in auxlist:
+        control_dates.create_dates(b,ob)
+    return auxlist
+def load_activities(list_shedule,ob):
+    aux = []
+    for i in list_shedule:
+        description = i[0]
+        course = i[1]
+        date = datetime.strptime(i[2], '%Y/%m/%d')
+        start_time = datetime.strptime(i[3], '%H:%M')
+        end_time = datetime.strptime(i[4], '%H:%M')
+        status = i[5]
+        new_acti = activities(description,course,date,start_time,end_time,status)
+        aux.append(new_acti)
+    for b in aux:
+        control_dates.add_activities(ob.shedule,b)
+    return aux
+        
+        
 #----------------------# 
-start_date2 = datetime.strptime("2022/11/01", '%Y/%m/%d')
-end_date2 = datetime.strptime("2023/02/01", '%Y/%m/%d')
-start_time2 = datetime.strptime("9:00", '%H:%M')
-end_time2 = datetime.strptime("11:00", '%H:%M')
-
-carrera = careers("computacion")
-horario = hours_class(2,start_time2,end_time2)
-horario2 = hours_class(3,start_time2,end_time2)
-auxlist = []
-auxlist.append(horario2)
-auxlist.append(horario)
-curso1 = course("comu",4,start_date2,end_date2,"En curso")
-curso1.careers_belong.append(carrera)
-curso1.class_time.append(horario)
-curso1.class_time.append(horario2)
-functions_admins.courses.append(curso1)
-
-estudiante = students("leiner","gergr",carrera,"rgrg")
-
-
-description = "estudiar"
-name_course = "Recreacion"
-date1 = datetime.strptime("2022/11/23", '%Y/%m/%d')
-status = "En curso"
-start_time2 = datetime.strptime("10:00", '%H:%M')
-end_time2 = datetime.strptime("20:00", '%H:%M')
-new_activities = activities(description,name_course,date1,start_time2,end_time2,status)
-estudiante = students("leiner","gergr",carrera,"rgrg")
-estudiante.activities.append(new_activities)
-estudiante.courses.append(curso1)
-functions_students.list_students.append(estudiante)
-create_file_students()

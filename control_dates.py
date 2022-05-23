@@ -16,17 +16,11 @@ def create_dates(course,student):
     gen_weeks(start_date,dif_months,end_date,dayclass,course,shedule)
 def create_years(start_date,end_date,shedule):
     if len(shedule) == 0:
-        if start_date.year == end_date.year:
-            year = years(start_date.year)
-            gen_months(year)
-            shedule.append(year)
-        else:
-            year = years(start_date.year)
-            year2 = years(end_date.year)
-            gen_months(year)
-            gen_months(year2)
-            shedule.append(year)
-            shedule.append(year2)
+        
+        year = years(start_date.year)
+        gen_months(year)
+        shedule.append(year)
+        
     else:
         for i in shedule:
             

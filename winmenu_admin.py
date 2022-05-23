@@ -4,30 +4,34 @@ import tkinter as tk
 from tkinter import ttk,messagebox
 import tkinter.font as tkFont
 import functions_admins
-from obStudents import students
-from obCareers import careers
 from obclass_time import hours_class
-from obCourses import course
 from datetime import datetime
-
+import files
 listdays = []
 careers_list = []
 cont = 0
+
+#-----------MENU ADMINISTRADOR-----------#
 def menu(i,win):
     winmenuadmin = tk.Toplevel()
     winmenuadmin.title("Menu administrativo")
     winmenuadmin.minsize(700,400)
     fontStyle = tkFont.Font(family="Lucida Grande", size=14)
     lb_name=tk.Label(winmenuadmin,text="Bienvenido: "+i.getName(),font=fontStyle).place(x=10, y=10)
-    
-    
-    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:[winCourses(i),hide(winmenuadmin)],height=2,width=8).place(x=300, y=70)
-    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:[menucareers(),hide(winmenuadmin)],height=2,width=8).place(x=300, y=150)
-    tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenuadmin)],height=2,width=8).place(x=300, y=230)
+    lb_checksave = tk.Label(winmenuadmin,text="Auto guardado",font=fontStyle).place(x= 400,y=10)
+    sv_checksave = tk.IntVar()
+    btn_checksave = tk.Checkbutton(winmenuadmin,variable=sv_checksave).place(x= 540,y =15)
+    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:[winCourses(i,sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=70)
+    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:[menucareers(sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=150)
+    tk.Button(winmenuadmin, text="Guardar cambios",font=fontStyle, command=save_changes,height=2,width=8).place(x=300, y=230)
+    tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenuadmin)],height=2,width=8).place(x=300, y=310)
     winmenuadmin.mainloop()
 
+def save_changes():
+    files.create_file_courses()
+    files.create_file_career()
 
-
+#-----------FUNCIONES PARA OCULTAR/MOSTRAR VENTANAS-----------#
 def hide(win):
     win.withdraw()
 def show(win):
@@ -35,7 +39,8 @@ def show(win):
 
 
 
-def menucareers():
+#-----------SUBMENU CARRERAS-----------#
+def menucareers(check):
 
     wincareers = tk.Toplevel()
 
@@ -52,17 +57,16 @@ def menucareers():
     e_namecareer= ttk.Entry(wincareers, textvariable = sv_namecareer, width=30).place(x=140, y=40)
 
     
-    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career(sv_namecareer,wincareers),height=2,width=15).place(x=10, y=300)
-    tk.Button(wincareers, text="modifica carrera",command=winModCareer,height=2,width=15).place(x=150, y=300)
+    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career(sv_namecareer,wincareers,check),height=2,width=15).place(x=10, y=300)
+    tk.Button(wincareers, text="modifica carrera",command=lambda:winModCareer(check),height=2,width=15).place(x=150, y=300)
     tk.Button(wincareers, text="Salir",command=lambda:close(wincareers),height=2,width=15).place(x=290, y=300)
 
 
 
 
     wincareers.mainloop()
-def winModCareer():
+def winModCareer(check):
     winmod = tk.Toplevel()
-    winmod.attributes("-topmost", 1)
     winmod.title("Manejo de carreras")
     winmod.minsize(700,400)
     
@@ -75,12 +79,14 @@ def winModCareer():
     sv_career = tk.StringVar()
     combobox_career = ttk.Combobox(winmod,values =list_careers,textvariable=sv_career,state="readonly").place(x=110,y=90)
     
-    tk.Button(winmod, text="modifica carrera",command=lambda:[mod_career(sv_career,sv_namecareer),close(winmod)],height=2,width=15).place(x=10, y=300)
+    tk.Button(winmod, text="modifica carrera",command=lambda:[mod_career(sv_career,sv_namecareer,check),close(winmod)],height=2,width=15).place(x=10, y=300)
     winmod.mainloop()
-def add_career(name,win):
+def add_career(name,win,check):
     name = name.get()
     functions_admins.add_careers(name,win)
-def mod_career(name,new_name):
+    if check == 1:
+        files.create_file_career()
+def mod_career(name,new_name,check):
     name = name.get()
     obcourse = None
     for i in functions_admins.list_careers:
@@ -89,10 +95,11 @@ def mod_career(name,new_name):
             break
     if obcourse != None:
         obcourse.setName(new_name.get())
+    if check == 1:
+        files.create_file_career()
     
-
-
-def winCourses(i):
+#-----------SUBMENU CURSOS-----------#
+def winCourses(i,check):
     if len(functions_admins.list_careers) > 0:
         winmenucourse = tk.Toplevel()
         winmenucourse.title("Manejo de cursos")
@@ -136,20 +143,21 @@ def winCourses(i):
 
         tk.Button(winmenucourse, text="Asociar carrera",command=lambda:[create_listcareer(sv_career),clear_career(sv_career)],height=2,width=20).place(x=10, y=350)
         
-        tk.Button(winmenucourse, text="Registrar curso",command=lambda:[add_course(sv_name_course.get(),sv_credits.get(),sv_startdate.get(),sv_enddate.get(),listdays,careers_list),clear_window(sv_name_course,sv_credits,sv_startdate,sv_enddate)],height=2,width=20).place(x=10, y=400)
+        tk.Button(winmenucourse, text="Registrar curso",command=lambda:[add_course(sv_name_course.get(),sv_credits.get(),sv_startdate.get(),sv_enddate.get(),listdays,careers_list,check),clear_window(sv_name_course,sv_credits,sv_startdate,sv_enddate)],height=2,width=20).place(x=10, y=400)
         
 
         winmenucourse.mainloop()
     else:
         messagebox.showinfo("Agregar curso","No Existen carreras disponibles")
 
-def add_course(name,credits,start_date,end_date,days,career_list):
+def add_course(name,credits,start_date,end_date,days,career_list,check):
     if len(days) > 0 and len(career_list) > 0:
         try:
             start_date = datetime.strptime(start_date, '%Y/%m/%d')
             end_date = datetime.strptime(end_date, '%Y/%m/%d')
             functions_admins.add_courses(name,credits,start_date,end_date,days,career_list)
-            
+            if check == 1:
+                files.create_file_courses()
         except:
             
             messagebox.showinfo("Agregar curso","No ingreso el formato de la fecha correcto")
@@ -167,6 +175,7 @@ def create_hour(day,starttime,endtime,week):
        end_time = datetime.strptime(end_time, '%H:%M')
        obhour = hours_class(day,start_time,end_time)
        listdays.append(obhour)
+       
     except:
         messagebox.showinfo("Agregar curso","No ingreso el formato de hora correcto")
 def listcareers():
@@ -182,16 +191,16 @@ def clear_window(name,credits,start_date,end_date):
     end_date.set('')
     listdays = []
     careers_list = []
-    
+
+#-----------LIMPIAR VENTANAS-----------#
 def clear_setdays(start_time,end_time,week):
     start_time.set('')
     end_time.set('')
     week.set('')
 def clear_career(career):
     career.set('')
-carrera = careers("computacion")
 
-estudiante = students("leiner","gergr",carrera,"rgrg")
+#-----------FUNCION CERRAR VENTANA-----------#
 def close(win):
     win.destroy()
 

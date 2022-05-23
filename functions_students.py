@@ -9,6 +9,7 @@ from obCourses import course
 from obclass_time import hours_class
 from obCareers import careers
 from tkinter import messagebox
+import files
 list_students = []#Almacena todos los estudiantes
 def register (name,email,career,password): 
     '''
@@ -38,7 +39,7 @@ def mod_careers(student):
     new_career = functions_admins.select_position_careers()
     new_career = functions_admins.careers[new_career]
     student.setCareer(new_career)
-def assign_course(student,course):
+def assign_course(student,course,check):
     '''
     Se recorre la lista de estudiantes para obtener el indice del estudiante que desea realizar la matricula
     se imprime la lista de cursos que estan disponibles en la carrera del estudiante
@@ -58,9 +59,10 @@ def assign_course(student,course):
             student.courses.append(course)
             control_dates.create_dates(course,student)
             messagebox.showinfo("Matricula de curso","El curso se matriculo con exito!.")
-        
+            if check == 1:
+                files.create_file_students()
 
-def add_activities(student,description,course,start_date,start_time,end_time):
+def add_activities(student,description,course,start_date,start_time,end_time,check):
     '''
     Se genera el indice del estudiante 
     Se solicita la informacion de la actividad
@@ -90,6 +92,8 @@ def add_activities(student,description,course,start_date,start_time,end_time):
         student.activities.append(new_activities)
         control_dates.add_activities(student.shedule,new_activities)
         messagebox.showinfo("Agregar actividad","La actividad se agrego con exito!.")
+        if check == 1:
+            files.create_file_students()
     elif result == 1:
         messagebox.showerror("Agregar actividad","La actividad tiene un choque de horario.")
     elif result == 2:

@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import ttk,messagebox
 import functions_admins
 from obCareers import careers
-
+import files
 import functions_students
 
 def win_register_():
@@ -55,6 +55,8 @@ def register_student(name,email,career,password):
     career = functions_admins.select_position_careers(strcareer)
     register = functions_students.register(strname,stremail,career,strpassword)
     if register == False:
+        files.load_file_students()
+        files.create_file_students()
         messagebox.showinfo("Registro","Te has registrado con exito!!! ")
     else:
         messagebox.showinfo("Registro","Error, El usuario ya se encuentra registrado!!. ")

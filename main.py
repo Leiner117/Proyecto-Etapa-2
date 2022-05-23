@@ -5,20 +5,21 @@ from obCareers import careers
 import functions_students
 from win_register import win_register_
 import winmenu_admin,winmenu_student
-carrera1 = careers("computacion")
-carrera2 = careers("Fisica")
-carrera3 = careers("Ingenieria")
-functions_admins.list_careers.append(carrera1)
-functions_admins.list_careers.append(carrera2)
-functions_admins.list_careers.append(carrera3)
+import files
 
 
+def load_files():
+    files.load_courses()
+    files.load_file_admins()
+    files.load_file_career()
+    files.load_file_students()
 #Ventana principial
+load_files()
 ventana_principal = tk.Tk()
 ventana_principal.title("Aplicación principal")
 ventana_principal.minsize(800,600)
-
 #nombre
+
 lb_nombre=tk.Label(ventana_principal,text="Nombre:").place(x=10, y=40)
 sv_nombre = tk.StringVar()
 e_nombre = ttk.Entry(ventana_principal, textvariable = sv_nombre, width=50).place(x=80, y=40)
@@ -56,7 +57,7 @@ def check_login():
                 break
         if flag == False:
             print("El usuario o la contraseña son incorrectos")
-            
+        
 #botónes de acción de la ventana
 
 def close():
