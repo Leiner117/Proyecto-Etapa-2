@@ -13,8 +13,7 @@ import files
 list_students = []#Almacena todos los estudiantes
 def register (name,email,career,password): 
     '''
-    Registra estudiantes en una lista, ingresando los datos solicitados 
-    Se utiliza una lista indexadas para almacenar los estudiantes 
+    Registra estudiantes en un objeto y los almacena en una lista
     '''
     flag = False
     if len(list_students) != 0:
@@ -31,20 +30,19 @@ def register (name,email,career,password):
     
 def mod_careers(student):
     '''
-    Recibe como parametro el nombre del estudiante que quiere cambiar la carrera
+    Recibe como parametro el objeto del estudiante que quiere cambiar la carrera
     Se llama a una funcion para elegir la nueva carrera
     Se selecciona la nueva carrrera
-    se realiza el cambio en la lista indexada
+    se realiza el cambio en el objeto
     '''
     new_career = functions_admins.select_position_careers()
     new_career = functions_admins.careers[new_career]
     student.setCareer(new_career)
 def assign_course(student,course,check):
+    
     '''
-    Se recorre la lista de estudiantes para obtener el indice del estudiante que desea realizar la matricula
-    se imprime la lista de cursos que estan disponibles en la carrera del estudiante
-    se utiliza un diccionario para almacenar los datos 
-    se llama una funcion para asignar los dias de clases del curso matriculado
+    recorre la lista de estudiantes para verificar que no este el curso matriculado
+    si no esta matriculado lo agrega al estudiante, carga las fechas de las clases en el calendario del estudiante
     '''
     if len(functions_admins.courses)>0:
         course = course.get()
@@ -64,10 +62,8 @@ def assign_course(student,course,check):
 
 def add_activities(student,description,course,start_date,start_time,end_time,check):
     '''
-    Se genera el indice del estudiante 
     Se solicita la informacion de la actividad
     se compara las fechas y horas para evitar choques con otras actividades
-    se utiliza un diccionario indexado para almacenar las actividades
     '''
 
     if course == '':
@@ -102,12 +98,9 @@ def add_activities(student,description,course,start_date,start_time,end_time,che
         messagebox.showerror("Agregar actividad","La actividad supera las horas diarias.")
 
 def compare_date(student,date,start_time,end_time):
+    
     '''
-    recorre el diccionario indexado de actividades
-    compara las fechas con la fecha que se quiere agregar
-    compara el estado la actividad almacenada para averiguar si tiene algun choque
-    se comparan las horas de la actividad para evitar choques de horarios
-    se retorna un True o False dependiendo de si hay o no choque
+    compara las fechas para averiguar si tiene choque, si tiene horas disponibles 
     '''
     result = 0
     shedule = student.shedule
@@ -186,51 +179,3 @@ def gen_reports_days(day):
         auxlist.append(auxlist2)
         
     
-'''start_date = datetime.strptime("2022/01/01", '%Y/%m/%d')
-end_date = datetime.strptime("2022/04/01", '%Y/%m/%d')
-start_time = datetime.strptime("9:00", '%H:%M')
-end_time = datetime.strptime("11:00", '%H:%M')
-
-start_date2 = datetime.strptime("2022/11/01", '%Y/%m/%d')
-end_date2 = datetime.strptime("2023/02/01", '%Y/%m/%d')
-start_time2 = datetime.strptime("9:00", '%H:%M')
-end_time2 = datetime.strptime("11:00", '%H:%M')
-
-carrera = careers("computacion")
-horario = hours_class(2,start_time,end_time)
-horario2 = hours_class(3,start_time,end_time)
-auxlist = []
-auxlist.append(horario2)
-auxlist.append(horario)
-curso1 = course("Progra",4,12,start_date,end_date,auxlist,carrera,"En curso")
-curso2 = course("mate",4,12,start_date2,end_date2,auxlist,carrera,"En curso")
-functions_admins.list_careers.append(carrera)
-functions_admins.courses.append(curso1)
-functions_admins.courses.append(curso2)
-estudiante = students("leiner","gergr",carrera,"rgrg")
-list_students.append(estudiante)
-assign_course(list_students[0])
-assign_course(list_students[0])
-
-description = "estudiar"
-name_course = "Recreacion"
-date1 = datetime.strptime("2022/11/23", '%Y/%m/%d')
-status = "En curso"
-start_time2 = datetime.strptime("00:00", '%H:%M')
-end_time2 = datetime.strptime("20:00", '%H:%M')
-new_activities = activities(description,name_course,date1,start_time2,end_time2,status)
-add_activities(estudiante)
-#control_dates.add_activities(list_students[0].shedule,new_activities)
-for i in list_students[0].shedule:
-    print("ano "+str(i.date_year))
-    for a in i.list_months:
-        print("mes "+str(a.num_months))
-        for b in a.list_weeks:
-            for c in b.list_days:
-                print("dia "+str(c.date))
-                print("tiempo consumido"+str(c.hours))
-                for j in c.list_activities:
-                    print("curso "+str(j.course))'''
-                    
-            
-        

@@ -39,14 +39,7 @@ def difference_months(start_date,end_date):
     result = (end_date.year-start_date.year) * 12 + (end_date.month-start_date.month)
     return result
 def gen_weeks(start_date,difference,end_date,dayclass,course,shedule):
-    '''
-    Se crea un ciclo donde compara un contador con la diferencia de meses entre las fechas
-    se almacenan todos los meses en una lista
-    se generan todas las semanas de un mes indicado utilizando una libreria
-    las semanas se almacenan en un diccionario asignando de clave el mes que pertenecen las semanas
-    este diccionario se almacena en una lista
-    retorna la lista con todas las semanas y la lista con todos los meses
-    '''
+    
     total_weeks = []
     start_month = start_date.month
     start_year = start_date.year
@@ -69,11 +62,7 @@ def gen_weeks(start_date,difference,end_date,dayclass,course,shedule):
 
 
 
-def create_months(month,year):
-    
-    name = calendar.month_name[month]
-    month1 = months(name,month)
-    return month1
+
 def gen_months(year):
     i = 0
     nummonths = 1
@@ -229,24 +218,6 @@ def add_activities(shedule,activies):
                         add_hours_weeks(b)
                         b.list_days.insert(position_day,obday)
                         break
-        else:
-            obmonth = create_months(date.month,date.year)
-            list_weeks = calendar.monthcalendar(date.year,date.month)
-            for i in list_weeks:
-                ob_week = weeks(date.month)
-                for a in i:
-                    if date.day == a:
-                        obday = days(datetime.weekday(date),date)
-                        obday.list_activies.append(activies)
-                        for e in obday.list_activities:
-                            totaltime = (e.getEnd_time()-e.getStart_time())
-                            totaltime = totaltime.seconds//60
-                            obday.hours = obday.hours+totaltime
-                        ob_week.list_days.append(obday)
-                        add_hours_weeks(ob_week)
-                        obmonth.list_weeks.append(ob_week)  
-                
-                obmonth.list_weeks.append(ob_week)  
     else:
         year = years(date.year)
         gen_months(year)

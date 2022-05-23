@@ -21,8 +21,8 @@ def menu(i,win):
     lb_checksave = tk.Label(winmenuadmin,text="Auto guardado",font=fontStyle).place(x= 400,y=10)
     sv_checksave = tk.IntVar()
     btn_checksave = tk.Checkbutton(winmenuadmin,variable=sv_checksave).place(x= 540,y =15)
-    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:[winCourses(i,sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=70)
-    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:[menucareers(sv_checksave.get()),hide(winmenuadmin)],height=2,width=8).place(x=300, y=150)
+    tk.Button(winmenuadmin, text="Cursos",font=fontStyle, command=lambda:winCourses(i,sv_checksave.get()),height=2,width=8).place(x=300, y=70)
+    tk.Button(winmenuadmin, text="Carreras",font=fontStyle, command=lambda:menucareers(sv_checksave.get()),height=2,width=8).place(x=300, y=150)
     tk.Button(winmenuadmin, text="Guardar cambios",font=fontStyle, command=save_changes,height=2,width=15).place(x=300, y=230)
     tk.Button(winmenuadmin, text="Salir",font=fontStyle, command=lambda:[show(win),close(winmenuadmin)],height=2,width=8).place(x=300, y=310)
     winmenuadmin.mainloop()
@@ -57,7 +57,7 @@ def menucareers(check):
     e_namecareer= ttk.Entry(wincareers, textvariable = sv_namecareer, width=30).place(x=140, y=40)
 
     
-    tk.Button(wincareers, text="Crear carrera",command=lambda:add_career[(sv_namecareer,wincareers,check),close(wincareers)],height=2,width=15).place(x=10, y=300)
+    tk.Button(wincareers, text="Crear carrera",command=lambda:[add_career(sv_namecareer,wincareers,check),close(wincareers)],height=2,width=15).place(x=10, y=300)
     tk.Button(wincareers, text="modifica carrera",command=lambda:winModCareer(check),height=2,width=15).place(x=150, y=300)
     tk.Button(wincareers, text="Salir",command=lambda:close(wincareers),height=2,width=15).place(x=290, y=300)
 
@@ -149,6 +149,7 @@ def winCourses(i,check):
         winmenucourse.mainloop()
     else:
         messagebox.showinfo("Agregar curso","No Existen carreras disponibles")
+        
 
 def add_course(name,credits,start_date,end_date,days,career_list,check):
     if len(days) > 0 and len(career_list) > 0:

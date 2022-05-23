@@ -5,7 +5,8 @@ import functions_admins
 from obCareers import careers
 import files
 import functions_students
-
+    
+#-----------MENU REGISTRO ESTUDIANTES-----------#
 def win_register_():
     if len(functions_admins.list_careers) > 0:
         winregister = tk.Toplevel()
@@ -46,7 +47,8 @@ def chargecareers():
     for i in functions_admins.list_careers:
         auxlist.append(i.getName())
     return auxlist
-
+    
+#-----------FUNCION REGISTRO ESTUDIANTES-----------#
 def register_student(name,email,career,password): 
     strname = name.get()
     stremail = email.get()

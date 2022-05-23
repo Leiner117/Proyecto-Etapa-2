@@ -13,7 +13,11 @@ from obAdmins import admins
 #-----------Escritura/lectura cursos-----------#
 
 def create_file_courses():
-    
+    '''
+    Crea el archivo de texto
+    Agrega los datos a guardar en variables
+    escribe todos los datos en el archivo usando de diferenciador el -
+    '''
     try:
         filecourses = open("courses.txt","w")
         for i in functions_admins.courses:
@@ -32,7 +36,14 @@ def create_file_courses():
     except:
         messagebox.showerror("Archivos","Hay un problema con la escritura del archivo")
 def load_courses():
+    '''
+    Lee linea por linea el archivo
+    convierte la linea en una lista
+    los datos los agrega a variables
+    crea la cantidad de objetos correspondiente a la cantidad de datos guardados
+    '''
     lista = []
+    
     try:
         filecourses = open("courses.txt","r")
     except FileNotFoundError:
@@ -101,6 +112,11 @@ def list_days(i):
 
 
 def create_file_career():
+    '''
+    Crea el archivo de texto
+    Agrega los datos a guardar en variables
+    escribe todos los datos en el archivo usando de diferenciador el -
+    '''
     try:
         filecareers = open("careers.txt","w")
         for i in functions_admins.list_careers:
@@ -110,6 +126,12 @@ def create_file_career():
     except:
         messagebox.showerror("Escritura de archivos","Error en la escritura del archivo externo")
 def load_file_career():
+    '''
+    Lee linea por linea el archivo
+    convierte la linea en una lista
+    los datos los agrega a variables
+    crea la cantidad de objetos correspondiente a la cantidad de datos guardados
+    '''
     try:
         filecareers = open("careers.txt","r")
     except FileNotFoundError:
@@ -135,6 +157,11 @@ def load_file_career():
 
 #-----------Escritura/lectura admins-----------#
 def create_file_admins():
+    '''
+    Crea el archivo de texto
+    Agrega los datos a guardar en variables
+    escribe todos los datos en el archivo usando de diferenciador el -
+    '''
     try:
         fileadmins = open("admins.txt","w")
         for i in functions_admins.list_admins:
@@ -148,6 +175,12 @@ def create_file_admins():
     except:
         messagebox.showerror("Archivos","Hay un problema con la escritura del archivo")
 def load_file_admins():
+    '''
+    Lee linea por linea el archivo
+    convierte la linea en una lista
+    los datos los agrega a variables
+    crea la cantidad de objetos correspondiente a la cantidad de datos guardados
+    '''
     try:
         fileadmins = open("admins.txt","r")
     except FileNotFoundError:
@@ -173,6 +206,11 @@ def load_file_admins():
         
 #-----------Escritura/lectura estudiantes-----------#
 def create_file_students():
+    '''
+    Crea el archivo de texto
+    Agrega los datos a guardar en variables
+    escribe todos los datos en el archivo usando de diferenciador el -
+    '''
     try:
         filecourses = open("students.txt","w")
         for i in functions_students.list_students:
@@ -214,6 +252,12 @@ def create_activities(i):
         
         
 def load_file_students():
+    '''
+    Lee linea por linea el archivo
+    convierte la linea en una lista
+    los datos los agrega a variables
+    crea la cantidad de objetos correspondiente a la cantidad de datos guardados
+    '''
     try:
         filecourse = open("students.txt","r")
     except FileNotFoundError:
